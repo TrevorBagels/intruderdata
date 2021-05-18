@@ -1,0 +1,8 @@
+{
+    "mongodb_client": "mongodb://localhost:27017/",
+    "dbname": "intruderdata",
+    "check_interval": 120,
+    "speed_limit": 0.175,
+    "player_scan_speed_limit": 30.0,
+    "my_id": 76561198118317437
+}

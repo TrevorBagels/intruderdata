@@ -1,0 +1,8 @@
+
+
+get agents:				https://api.intruderfps.com/agents
+get agent votes:		https://api.intruderfps.com/agents/{steamid}/votes
+get agent stats:		https://api.intruderfps.com/agents/{steamid}/stats
+get agent data:			https://api.intruderfps.com/agents/{steamid}
+get room list:			https://api.intruderfps.com/rooms ? [page, perPage, orderBy]
+get room players:		https://api.intruderfps.com/rooms/{room_id}/agents
