@@ -1,5 +1,5 @@
 # intruderdata
-A data scraper for Intruder (a videogame).
+A data scraper for [Intruder](https://intruderfps.com/) (a videogame).
 
 Requirements:
   * MongoDB
