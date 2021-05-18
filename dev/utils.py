@@ -1,11 +1,13 @@
 import json, time, os, re
 from bson import json_util
 from datetime import date, datetime, timezone, timedelta
+import traceback
 
 
 def to_iso8601(dt:datetime):
 	return dt.strftime('%Y-%m-%dT%H:%M:%SZ')
 def from_iso8601(dt:str) -> datetime:
+	if type(dt) == datetime: return dt
 	return datetime.strptime(dt, '%Y-%m-%dT%H:%M:%SZ').astimezone(timezone.utc)
 
 def save_json(file, data:dict):
@@ -43,7 +45,7 @@ def round_to_nearest(num, base):
 	return n - (n % base)
 
 def now() -> datetime:
-	return datetime.now().astimezone(timezone.utc)
+	return datetime.now().astimezone(timezone.utc).replace(tzinfo=None)
 
 def local(t:datetime) -> datetime:
     now_timestamp = time.time()

@@ -29,7 +29,7 @@ class Main:
 		x_axis = []
 		y_axis = []
 		for xy in data:
-			x_axis.append(utils.from_iso8601(xy["timestamp"]))
+			x_axis.append(xy["timestamp"])
 			y_axis.append(xy["value"])
 		s = pd.Series(y_axis, x_axis).drop_duplicates()
 		timeline = s.resample(freq).ffill().interpolate() #every 6 minutes

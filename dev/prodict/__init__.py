@@ -1,8 +1,15 @@
 from typing import Any, List, TypeVar, Tuple
 import copy
 from enum import IntEnum, Enum
-
+from datetime import datetime, timezone
 # from typing_inspect import get_parameters
+
+def str_to_dt(value):
+    if type(value) == str:
+        return datetime.strptime(value, '%Y-%m-%dT%H:%M:%SZ').astimezone(timezone.utc)
+    else:
+        return value
+    
 
 DICT_RESERVED_KEYS = vars(dict).keys()
 
@@ -157,6 +164,8 @@ class Prodict(dict):
             constructor = int
         elif attr_type1 == list:
             constructor = list
+        elif attr_type1 == datetime:
+            constructor = str_to_dt
         elif isinstance(value, Prodict):
             constructor = attr_type1.from_dict
         elif attr_type1 is Any:

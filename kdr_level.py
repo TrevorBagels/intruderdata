@@ -3,6 +3,7 @@ from dev import utils
 import pandas as pd
 import time, random, requests, pymongo, threading
 from matplotlib import pyplot
+import numpy as np
 
 class Main:
 	def __init__(self):
@@ -44,9 +45,43 @@ class Main:
 
 
 
-m = Main()
+values = [[], [], []]
+xyz = []
 
-m.display_timeline("players", 73140, "repPositiveHistory")
-m.display_timeline("players", 73140, "repNegativeHistory")
-m.display_timeline("players", 73140, "kills", stats=True)
-time.sleep(3)
+m = Main()
+for p in m.players.find({"stats": {"$exists": True}}):
+	level_float = p['stats']['level'] + (p['stats']['levelXp'] / p['stats']['levelXpRequired'])
+	#values[0].append(p['loginCount'])
+	values[0].append(level_float)
+	kdr = (p['stats']['kills']) / max(p['stats']['deaths'], 1)
+	values[1].append(kdr)
+	color = "#0313fc"
+	if p['stats']['kills'] <= 0: color = "#fc9403"
+	if p['stats']['deaths'] <= 0: color = "#fc03d2"
+	if p['stats']['deaths'] <= 0 and p['stats']['kills'] <= 0: color = "#03fc0b"
+	values[2].append(color)
+	#values[1].append(utils.from_iso8601(p["firstLogin"]))
+	#values[1].append(p['stats']['levelXpRequired'])
+
+for a in range(len(values[0])):
+	xyz.append((values[0][a], values[1][a], values[2][a]))
+def sortingfunc(v):
+	return v[0]
+xyz.sort(key=sortingfunc)
+values = [[],[],[]]
+for v in xyz:
+	values[0].append(v[0])
+	values[1].append(v[1])
+	values[2].append(v[2])
+
+
+
+pyplot.scatter(values[0], values[1], s=2, c=values[2], alpha=.2)
+pyplot.xlabel("level")
+pyplot.ylabel("KDR")
+pyplot.yscale("log")
+m, b = np.polyfit(values[0], values[1], 1)
+x = np.array(values[0])
+pyplot.plot(x, m*x + b)
+pyplot.show()
+#pyplot.xscale("log")

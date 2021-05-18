@@ -77,15 +77,15 @@ class Main:
 		log = []
 		for room in self.rooms.find({"joinLog": {"$exists": True}, "leaveLog": {"$exists": True}}):
 			for x in room["joinLog"]:
-				if x['value'] == player["_id"]: log.append( ( utils.local(utils.from_iso8601(x["timestamp"])), "join", room["_id"] ) )
+				if x['value'] == player["_id"]: log.append( ( utils.local(x["timestamp"]), "join", room["_id"] ) )
 			for x in room["leaveLog"]:
-				if x['value'] == player["_id"]: log.append( ( utils.local(utils.from_iso8601(x["timestamp"])), "leave", room["_id"] ) )
+				if x['value'] == player["_id"]: log.append( ( utils.local(x["timestamp"]), "leave", room["_id"] ) )
 		def sort_log(value):
 			return (utils.long_ago() - value[0]).total_seconds()
 		log.sort(key=sort_log)
 		
 		for x in log:
-			print(utils.to_iso8601(x[0]), "\t", x[1], "\t", self.rooms.find_one({"_id": x[2]})["name"])
+			print(x[0], "\t", x[1], "\t", self.rooms.find_one({"_id": x[2]})["name"])
 		
 	def who_has_briefcase(self, roomId):
 		room = self.rooms.find_one({"_id": roomId})
@@ -106,7 +106,7 @@ class Main:
 		x_axis = []
 		y_axis = []
 		for xy in data:
-			x_axis.append(utils.from_iso8601(xy["timestamp"]))
+			x_axis.append(xy["timestamp"])
 			y_axis.append(xy["value"])
 		s = pd.Series(y_axis, x_axis).drop_duplicates()
 		timeline = s.resample(freq).ffill().interpolate() #every 6 minutes

@@ -23,7 +23,8 @@ class Logger:
 	def _timestamp(self) -> str:
 		dt = datetime.datetime.now()
 		if self.utc: dt = dt.astimezone(datetime.timezone.utc)
-		return dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+		return dt
+		#return dt.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
 	def log(self, *args, t="normal", v=2, end=None):
@@ -42,4 +43,5 @@ class Logger:
 		
 		if self.logs_db != None:
 			self.logs_db.insert_one({"time": timestamp, "message": " ".join(stringed_args), "verbosity": v, "type": t})
-		
+
+

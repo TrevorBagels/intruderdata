@@ -67,7 +67,7 @@ class Main:
 			for x in self.player_scan_queue.copy():
 				self.scan_player_deep(x)
 				self.players.update_one({"_id": x}, {"$set": {
-					"lastUpdated": utils.to_iso8601(utils.now())
+					"lastUpdated": utils.now()
 				}})
 				self.player_scan_queue.remove(x)
 			time.sleep(3)
@@ -138,7 +138,7 @@ class Main:
 		
 		if "timeFound" not in self.rooms.find_one(key):
 			self.rooms.update_one(key, 
-				{'$set': {"timeFound": utils.to_iso8601(utils.now())} }
+				{'$set': {"timeFound": utils.now()} }
 				, upsert=True)
 		#keys, and the keys of their values
 		for x in [("agentCountHistory", "agentCount"), ("positionHistory", "position"), ("versionHistory", "version")]:
@@ -207,7 +207,7 @@ class Main:
 		upsert=True
 		)
 
-		self.set_if_not_found(self.players, player.id, "timeFound", utils.to_iso8601(utils.now()))
+		self.set_if_not_found(self.players, player.id, "timeFound", utils.now())
 
 		for x in ["role", "lastLogin", "name", "loginCount", "avatarUrl"]:
 			self.update_history(self.players, player.id, (x + "History"), self.players.find_one(key)[x])
@@ -215,8 +215,8 @@ class Main:
 		self.update_history(self.players, player.id, "roomHistory", current_room) #update room history
 
 		#check last time api calls were made on this player. we might need to add them to the queue.
-		self.set_if_not_found(self.players, player.id, "lastUpdated", utils.to_iso8601(utils.long_ago()))
-		if (utils.now() - utils.from_iso8601(self.players.find_one(key)['lastUpdated'])).total_seconds() >= self.config.player_scan_speed_limit:
+		self.set_if_not_found(self.players, player.id, "lastUpdated", utils.long_ago())
+		if (utils.now() - self.players.find_one(key)['lastUpdated']).total_seconds() >= self.config.player_scan_speed_limit:
 			if player.id not in self.player_scan_queue: self.player_scan_queue.append(player.id)
 		
 		
@@ -232,7 +232,7 @@ class Main:
 		if len(version_list) == 0 or version_list[len(version_list)-1]['value'] != value:
 			for x in range(2): version_list.append(D.VersionedData(value=value).to_dict()) #append twice
 		elif version_list[len(version_list)-1]['value'] == value:
-			version_list[len(version_list)-1]['timestamp'] = utils.to_iso8601(utils.now())
+			version_list[len(version_list)-1]['timestamp'] = utils.now()
 		return version_list
 
 	def add_if_null(self, collection, id, key:str, value):

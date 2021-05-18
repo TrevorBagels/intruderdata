@@ -1,3 +1,4 @@
+from datetime import datetime
 from .prodict import Prodict
 from . import utils
 
@@ -30,9 +31,9 @@ class User(Prodict):
 	avatarUrl:	str
 	role:		str
 	loginCount:	int
-	firstLogin:	str #timestamp
-	lastLogin:	str #timestamp
-	lastUpdate:	str #timestamp
+	firstLogin:	datetime #timestamp
+	lastLogin:	datetime #timestamp
+	lastUpdate:	datetime #timestamp
 	status:		any #probably string?
 
 
@@ -46,7 +47,7 @@ class Map(Prodict):
 	thumbnailUrl: 	str
 	isMapMakerMap:	bool
 	tags:			list[str]
-	lastUpdate:		str #timestamp. doesn't have the Z, just has the date.
+	lastUpdate:		str #timestamp. doesn't have the Z, just has the date. so we'll leave this as a string rather than trying to convert it. plus, we aren't doing much with the maps anyways, and the collection for maps is tiny.
 
 class Room(Prodict):
 	id:			int
@@ -108,7 +109,7 @@ class Status(Prodict):
 	id:			int
 	agentId:	int
 	roomId:		int
-	lastUpdate:	str
+	lastUpdate:	datetime #timestamp
 	online:		bool
 	room:		any
 
@@ -119,7 +120,7 @@ class Votes(Prodict):
 	positive:		int
 	negative:		int
 	received:		int
-	lastUpdate:		str
+	lastUpdate:		datetime
 
 
 
@@ -128,10 +129,10 @@ class Rooms(Prodict):
 	data:		list[Room]
 
 class VersionedData(Prodict):
-	timestamp:		str #datetime in iso format
+	timestamp:		datetime 
 	value:			any
 	def init(self):
-		self.timestamp = utils.to_iso8601(utils.now())
+		self.timestamp = utils.now()
 
 	#when pushing to list
 	#if the value of the last item in the list != this value, append twice.
@@ -160,15 +161,15 @@ class MongoStatsHistory(Prodict):
 
 class MongoUser(Prodict):
 	_id:			int
-	lastUpdated:	str #last time we updated this user with api calls
+	lastUpdated:	datetime #last time we updated this user with api calls
 	steamId:		str
 	name:			str
 	avatarUrl:		str
 	role:			str
 	loginCount:		int
-	firstLogin:		str
-	lastLogin:		str
-	lastUpdate:		str
+	firstLogin:		datetime
+	lastLogin:		datetime
+	lastUpdate:		datetime
 	repPositive:	int
 	repNegative:	int
 	roleHistory:		list[VersionedData]
@@ -209,7 +210,7 @@ class MongoRoom(Prodict):
 	mapHistory:				list[VersionedData] #int (map ID)
 	joinableBy:				str
 	creatorId:				int
-	timeFound:				str #first time this room was discovered
+	timeFound:				datetime #first time this room was discovered
 	#score_history:	list[Scores]
 
 
@@ -221,7 +222,7 @@ class MongoMatch(Prodict):
 	#fire:		list[int] #steam IDs
 	#water:		list[int] #steam IDs
 	room:		int #room ID
-	timestamp:	str#when we noticed this match
+	timestamp:	datetime#when we noticed this match
 	joins:		list[VersionedData] #time log of when agents joined. most of them should have joined at timeStart. value=agent id
 	leaves:		list[VersionedData] #time log of when agents left. value=agent id
 	part1:		Scores #Fire vs Water

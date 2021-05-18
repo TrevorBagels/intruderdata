@@ -76,7 +76,7 @@ class RoomWatcher:
 			timedifference = 0
 			if len(timeline) >= 4:
 				difference = timeline[len(timeline)-1]["value"] - timeline[len(timeline)-1 - 2]["value"]
-				timedifference = (utils.from_iso8601(timeline[len(timeline)-1]["timestamp"]) - utils.from_iso8601(timeline[len(timeline)-1 - 2]["timestamp"])).total_seconds()/60
+				timedifference = (timeline[len(timeline)-1]["timestamp"] - timeline[len(timeline)-1 - 2]["timestamp"]).total_seconds()/60
 			
 			if difference != 0 and timedifference <= 40:
 				changes[c] = difference
@@ -94,7 +94,7 @@ class RoomWatcher:
 		x_axis = []
 		y_axis = []
 		for xy in data:
-			x_axis.append(utils.from_iso8601(xy["timestamp"]))
+			x_axis.append(xy["timestamp"])
 			y_axis.append(xy["value"])
 		s = pd.Series(y_axis, x_axis).drop_duplicates()
 		try:
