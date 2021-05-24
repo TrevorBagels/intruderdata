@@ -18,6 +18,14 @@ def load_json(file) -> dict:
 		write_to(file, "{}") #make that file exist, and give it nothing.
 	return json.loads(read(file), object_hook=json_util.object_hook)
 
+def try_convert(value, converter=int):
+	try:
+		v = converter(value)
+		return v
+	except:
+		return value
+
+
 def write_to(file, content):
 	with open(file, "w+") as f:
 		f.write(content)

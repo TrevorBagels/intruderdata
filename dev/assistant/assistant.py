@@ -1,6 +1,4 @@
-import speech_recognition, mac_say, datetime, os, time, subprocess, json, requests
-
-
+import datetime
 
 
 class AssistantInteraction:

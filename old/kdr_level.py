@@ -53,12 +53,10 @@ for p in m.players.find({"stats": {"$exists": True}}):
 	level_float = p['stats']['level'] + (p['stats']['levelXp'] / p['stats']['levelXpRequired'])
 	#values[0].append(p['loginCount'])
 	values[0].append(level_float)
-	kdr = (p['stats']['kills']) / max(p['stats']['deaths'], 1)
-	values[1].append(kdr)
-	color = "#0313fc"
-	if p['stats']['kills'] <= 0: color = "#fc9403"
-	if p['stats']['deaths'] <= 0: color = "#fc03d2"
-	if p['stats']['deaths'] <= 0 and p['stats']['kills'] <= 0: color = "#03fc0b"
+	#kdr = (p['stats']['kills']) / max(p['stats']['deaths'], 1)
+	values[1].append(p['stats']['timePlayed']/60/60) #hours 
+	color = "#0313fc" #blue
+	if p['stats']['kills'] < p['stats']['deaths']: color = "#fc9403" #not blue
 	values[2].append(color)
 	#values[1].append(utils.from_iso8601(p["firstLogin"]))
 	#values[1].append(p['stats']['levelXpRequired'])
@@ -78,10 +76,11 @@ for v in xyz:
 
 pyplot.scatter(values[0], values[1], s=2, c=values[2], alpha=.2)
 pyplot.xlabel("level")
-pyplot.ylabel("KDR")
-pyplot.yscale("log")
+pyplot.ylabel("playtime (hours)")
+#pyplot.ylabel("KDR")
 m, b = np.polyfit(values[0], values[1], 1)
 x = np.array(values[0])
 pyplot.plot(x, m*x + b)
+pyplot.yscale("log")
+pyplot.xscale("log")
 pyplot.show()
-#pyplot.xscale("log")

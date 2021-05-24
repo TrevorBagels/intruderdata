@@ -45,11 +45,11 @@ class RoomWatcher:
 				changes = allchanges[0]
 				if changes["teamKills"] != 0:
 					self.main.log(a.name + " had", changes["teamKills"], f"team kills within the past {allchanges[1]['teamKills']} minutes.", v=0, t="important")
-				if changes["kills"] > 4:
+				if changes["kills"] > 5:
 					self.main.log(a.name + " had", changes["kills"], f"kills within the past {allchanges[1]['kills']} minutes.", t="important", v=0)
 				for c in ["repPositiveHistory", "repNegativeHistory"]:
 					if changes[c] != 0:
-						self.main.log(a.name + f" had {changes[c]}" + {"repPositiveHistory": "upvote(s)", "repNegativeHistory": "downvote(s)"}[c] + f" in the past {allchanges[1][c]} minutes. ")
+						self.main.log(a.name + f" had {changes[c]}" + {"repPositiveHistory": "upvote(s)", "repNegativeHistory": "downvote(s)"}[c] + f" in the past {allchanges[1][c]} minutes. ", v=0)
 				
 			time.sleep(120) #sleep for two minutes
 

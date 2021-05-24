@@ -23,7 +23,17 @@ class Main:
 	def analyze(self, room):
 		agents = None
 		pass
-
+	def display_timeline(self, coll, _id, key):
+		room = self.db[coll].find_one({"_id": _id})
+		print(room['name'])
+		data = room[key]
+		timeline = self.get_timeline(data, freq=".5H")
+		#print(timeline)
+		#timeline.plot()
+		df = pd.DataFrame({"values": timeline.values, "dates": timeline.axes[0]})
+		df.plot.line("dates", "values")
+		pyplot.show()
+		return df
 
 	def get_timeline(self, data:list, freq=".1H"):
 		x_axis = []
@@ -39,5 +49,19 @@ class Main:
 
 m = Main()
 
-m.display_timeline("rooms", 78105, "agentCountHistory")
+#m.display_timeline("rooms", 76555, "agentCountHistory")
+
+data = [[], []]
+stuff = m.rooms.find_one({"_id": 76555})["agentCountHistory"]
+for i in range(int(len(stuff)/2)):
+	x = stuff[i*2]
+	data[0].append(x["timestamp"])
+	data[1].append(x["value"])
+
+	
+pyplot.plot(data[0], data[1])
+pyplot.show()
+#pyplot.xscale("log")
+
+
 time.sleep(3)

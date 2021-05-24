@@ -20,6 +20,8 @@ class Main:
 		self.watcher = RoomWatcher(self)
 		self.running = True
 		threading.Thread(target=self.player_scan_thread).start()
+		#self.scan_everyone(start_at=468)
+
 		while self.running:
 			start = time.time()
 			self.log("Scanning rooms.", v=1)
@@ -65,16 +67,24 @@ class Main:
 	def player_scan_thread(self):
 		while self.running:
 			for x in self.player_scan_queue.copy():
-				self.scan_player_deep(x)
+				try:
+					self.scan_player_deep(x)
+				except Exception as e:
+					print(x)
+					print(e)
+					continue
 				self.players.update_one({"_id": x}, {"$set": {
 					"lastUpdated": utils.now()
 				}})
 				self.player_scan_queue.remove(x)
-			time.sleep(3)
+			time.sleep(.5)
+			if len(self.player_scan_queue) > 5:
+				print("Scan queue length:", len(self.player_scan_queue))
+			
 				
 
 	def scan_player_deep(self, player_id):
-		time.sleep(.7)
+		time.sleep(.15)
 		self.log("Scan player", player_id, v=2)
 		steamid = self.players.find_one({"_id": player_id})["steamId"]
 		
@@ -156,15 +166,18 @@ class Main:
 		
 		if room.agentCount > 0:
 			agents = self.get_agents(room.id)
-			agent_ids = []
-			for x in agents:
-				agent_ids.append(x.id)
-				self.scan_player(x, current_room=room.id)
-				if int(x.steamId) == int(self.config.my_id):
-					me_found = True
-					if self.watcher.watching == None:
-						self.watcher.watch(room.id)
-			self.rooms.update_one(key, {"$set": {"currentAgents": agent_ids}})
+			if agents == None:
+				self.log(f"Could not fetch agents from room {room.id}. Something went wrong. ", t="bad", v=0)
+			else:
+				agent_ids = []
+				for x in agents:
+					agent_ids.append(x.id)
+					self.scan_player(x, current_room=room.id)
+					if int(x.steamId) == int(self.config.my_id):
+						me_found = True
+						if self.watcher.watching == None:
+							self.watcher.watch(room.id)
+				self.rooms.update_one(key, {"$set": {"currentAgents": agent_ids}})
 		else:
 			self.rooms.update_one(key, {"$set": {"currentAgents": []}})
 		
@@ -192,6 +205,20 @@ class Main:
 			self.watcher.stop_watching()
 					
 				
+	def scan_everyone(self, start_at=1):
+		page = start_at
+		while page <= 950:
+			url = f"https://api.intruderfps.com/agents?perPage=100&page={page}&orderBy=lastLogin:asc"
+			a = self.get(url)
+			for u in a["data"]:
+				del u["status"]
+				user = D.User.from_dict(u)
+				self.scan_player(user)
+			while len(self.player_scan_queue) > 50:
+				time.sleep(1)
+				print(page, len(self.player_scan_queue))
+			page += 1
+			
 
 	
 	def scan_player(self, player:D.User, current_room=None):
@@ -252,15 +279,6 @@ class Main:
 		new_versions = self.version_update(collection.find_one({"_id": id})[key], value)
 		collection.update({"_id": id}, {"$set": {key: new_versions}})
 
-
-			
-
-
-		
-
-		
-
-	
 	def get_agents(self, room_id) -> list[D.User]:
 		agents = self.get(f"https://api.intruderfps.com/rooms/{room_id}/agents")
 		if agents == None: return None
@@ -271,6 +289,8 @@ class Main:
 		return data
 
 	def get_rooms(self) -> D.Rooms:
-		return D.Rooms.from_dict(self.get("https://api.intruderfps.com/rooms?perPage=100"))
-	
-	
+		try:
+			return D.Rooms.from_dict(self.get("https://api.intruderfps.com/rooms?perPage=100"))
+		except:
+			print("Couldn't get rooms", t="bad", v=0)
+			return D.Rooms.from_dict({})

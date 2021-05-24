@@ -113,8 +113,46 @@ class Main:
 		return timeline
 m = Main()
 
+from colour import Color
 
-m.analyze({"name": "bopman15"})
+colors = list(Color("red").range_to(Color("blue"),101))
+
+pyplot.style.use("dark_background")
+
+timestamps = []
+values = []
+plotcolors = []
+labels = []
+now = datetime(year=2018, month=5, day=1)
+for x in m.players.find():
+	diff = int(min((x["lastLogin"] - x["firstLogin"]).days, 1000)/10)
+	timestamps.append(x["firstLogin"])
+	values.append(x["lastLogin"])
+	color = str(colors[diff])
+	plotcolors.append(color)
+	#values.append(1)
+
+#s = pd.Series(values, timestamps)
+#tl = s.resample("1D").sum().interpolate()
+"""
+total = 0
+for i, x in enumerate(tl):
+	total += x
+	tl[i] = total
+"""
+#pyplot.plot(tl.axes[0], tl.values)
+pyplot.scatter(timestamps, values, c=plotcolors, s=2)
+for x_pos, y_pos, label in zip(timestamps, values, labels):
+	pyplot.annotate(label, xy=(x_pos, y_pos))
+
+
+pyplot.xlabel("first login")
+pyplot.ylabel("last login")
+pyplot.show()
+
+
+
+
 
 
 
