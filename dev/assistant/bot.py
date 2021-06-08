@@ -16,10 +16,14 @@ class MongoDiscordUser(Prodict):
 	timeAdded:		datetime.datetime
 	favoriteRooms:	list[int]
 	permissions:	list[int]
+	verified:		bool #whether or not this person's steam account is linked to their discord.
+	team:			str 
 	def init(self):
 		self.lastScanned = utils.now()
 		self.timeAdded = utils.now()	
 		self.permissions = [0]
+		self.verified = False
+		self.team = "unselected"
 
 """
 Discord user schema
@@ -37,10 +41,11 @@ class AssistantBot(commands.Bot):
 		from .main import Main
 		self.main = Main()
 		commands.Bot.__init__(self, command_prefix=",")
-		from .cogs import whosonline, addme, advice
+		from .cogs import whosonline, addme, advice, mystats
 		self.WhosOnline = self.add_cog(whosonline.Module(self))
 		self.AddMe = self.add_cog(addme.Module(self))
 		self.Advice = self.add_cog(advice.Module(self))
+		self.MyStats = self.add_cog(mystats.Module(self))
 
 	async def getme(self, ctx):
 		me = self.main.db['discord'].find_one({"_id": ctx.author.id})
