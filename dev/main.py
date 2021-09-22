@@ -263,7 +263,7 @@ class Main:
 	
 	def get_agents(self, room_id) -> list[D.User]:
 		agents = self.get(f"https://api.intruderfps.com/rooms/{room_id}/agents")
-		if agents == None: return None
+		if agents == None: return []
 		time.sleep(self.config.speed_limit)
 		data = []
 		for x in agents:
@@ -272,5 +272,3 @@ class Main:
 
 	def get_rooms(self) -> D.Rooms:
 		return D.Rooms.from_dict(self.get("https://api.intruderfps.com/rooms?perPage=100"))
-	
-	
